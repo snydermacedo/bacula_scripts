@@ -1,0 +1,54 @@
+
+1. Garantir chave confiavel
+
+# wget -qO - http://bacula.org/downloads/baculum/baculum.pub | apt-key add -
+
+2. Criar repositorio bacula
+
+# echo "
+deb [ arch=amd64 ] http://bacula.org/downloads/baculum/stable/ubuntu xenial main
+deb-src http://bacula.org/downloads/baculum/stable/ubuntu xenial main
+" > /etc/apt/sources.list.d/baculum.list
+
+3. Atualizar e instalar dependencias
+
+# apt-get update && apt-get install php-bcmath php7.0-mbstring baculum-api baculum-api-apache2 baculum-common bacula-console baculum-web baculum-web-apache2
+
+4. Adicionar ao sudoers
+
+# nano /etc/sudoers
+
+www-data ALL=NOPASSWD: /usr/sbin/bconsole
+www-data ALL=NOPASSWD: /usr/sbin/bdirjson
+www-data ALL=NOPASSWD: /usr/sbin/bsdjson
+www-data ALL=NOPASSWD: /usr/sbin/bfdjson
+www-data ALL=NOPASSWD: /usr/sbin/bbconsjson
+
+
+5. Permissão no diretorio do bacula
+
+# chown www-data /etc/bacula/
+
+6. Ativar rewrite do apache - FUNÇÃO DE REESCREVER urlS A PARTIR DE UM CONJUNTO DE PARAMETROS. 
+
+# a2enmod rewrite
+
+7. ABILITAR  ENDEREÇO PARA BACULUM  E API - PARA CONSEGUIR CONFIGURAR VIA APACHE
+
+# a2ensite baculum-web baculum-api
+
+8. Reiniciar o apache
+
+systemctl restart apache2.service ou /etc/init.d/apache2 restart
+
+
+# Acesse e configure pelo navegador de Internet a API http://ip_do_servidor:9096/ e depois o Baculum http://ip_do_servidor:9095/
+
+# 172.19.155.201:9096
+# 172.19.155.201:9095 
+
+c@n@@_admin!@#
+
+############################################################################
+
+

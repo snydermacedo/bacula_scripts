@@ -1,0 +1,111 @@
+1. Instalar postgresql
+ 
+   #apt-get install postgresql
+
+2. Após instalado, adicionar uma senha para o usuário postgres, do servidor PostgreSQL
+
+    # su postgres
+    $ psql
+    postgres=# alter user postgres with password 'senha';
+
+3. Sair do terminal do psql:
+
+   postgres=#\q
+
+4. Retornar ao usuário root:
+
+5. Editar /etc/postgresql/9.4/main/pg_hba.conf
+  
+# Database administrative login by Unix domain socket
+local  all       postgres            md5
+
+# TYPE DATABASE    USER    ADDRESS      METHOD
+
+# "local" is for Unix domain socket connections only
+
+local  all       all               md5
+
+# IPv4 local connections:
+host  all       all     127.0.0.1/32    md5
+host  all       all     0.0.0.0/0      md5
+
+# IPv6 local connections:
+host  all       all     ::1/128       md5
+
+6. Editar /etc/postgresql/9.4/main/postgresql.conf
+
+listen_addresses = '*'     # what IP address(es) to listen on;
+
+7. Reiniciar PostgresSQL
+
+# service postgresql restart  ou  /etc/init.d/postgresql restart
+
+8. Testar conectividade com BD como root
+
+# psql -Upostgres -W
+
+9. Baixa o arquivo para /usr/src e descompactar bacula 9.0.6
+
+# wget -qO- http://www.bacula.com.br/atual | tar -xzvf - -C /usr/src
+
+10. Entrar no diretório descmpactado
+
+# cd /usr/src/bacula-9.0.6
+
+11. Instalar Dependencias DEBIAN 8 | POSTGRESQL
+
+ # apt-get install -y build-essential libreadline6-dev zlib1g-dev liblzo2-dev mt-st mtx postfix libacl1-dev libssl-dev postgresql-server-dev-9.4 postgresql-9.4
+
+12. Customizando a instalação
+
+#  ./configure --with-readline=/usr/include/readline --disable-conio --bindir=/usr/bin --sbindir=/usr/sbin --with-scriptdir=/etc/bacula/scripts --with-working-dir=/var/lib/bacula --with-logdir=/var/log --enable-smartalloc --with-postgresql --with-archivedir=/mnt/backup --with-job-email=seu@email.com.br --with-hostname=ip_nome_servidor
+
+13. Compilar, instalar e habilitar daemons para iniciar com boot do sistema 
+
+# make -j8 && make install && make install-autostart
+
+14. Dando permissão nos diretórios
+
+ # chmod 777 -R /mnt/backup                    -   Armazenamento
+ # chmod 777 -R /etc/bacula               -   Diretório do bacula e scripts
+ # chmod 777 -R /usr/sbin/dbcheck     -  BD
+
+15. Logar no postgres
+
+# su postgres
+
+16. Ir ao diretorio que armazena os scripts do BD.
+
+# cd /etc/bacula/scripts
+
+17. Executando scripts de criação do banco, tabelas e usuario Bacula - (cd /etc/bacula/scripts)
+
+  
+ # ./create_postgresql_database -Upostgres
+ # ./make_postgresql_tables -Upostgres
+ # ./grant_postgresql_privileges -Upostgres
+ 
+18. Alterar senha do usuário bacula q foi criado pelos scripts
+
+ # su postgres
+  $psql
+  postgres=# alter user bacula with password 'senha';
+  postgres=# \q
+
+19. Editar bacula-dir.conf
+
+# Generic catalog service Catalog
+{
+   Name = MyCatalog   dbname = "bacula"; dbuser = "bacula"; dbpassword ="senha_criada_para_usuario_bacula"
+}
+
+20. Reiniciar os deamons
+
+ # /etc/init.d/bacula-fd start && /etc/init.d/bacula-sd start && /etc/init.d/bacula-dir start
+
+ # /etc/init.d/bacula-fd restart && /etc/init.d/bacula-sd restart && /etc/init.d/bacula-dir restart 
+
+21. Reiniciar o bacula-dir.conf
+
+# /etc/init.d/bacula-dir.conf restart 
+
